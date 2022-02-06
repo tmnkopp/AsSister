@@ -22,16 +22,16 @@ namespace AW.API
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-        }
-
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
+        } 
+        public IConfiguration Configuration { get; } 
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAuthentication(AzureADDefaults.BearerAuthenticationScheme)
                 .AddAzureADBearer(options => Configuration.Bind("AzureAd", options));
-            services.AddControllers();
+
+            //services.AddControllers(options => options.EnableEndpointRouting = false);
+            services.AddControllersWithViews();
+
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(options =>
             {
@@ -39,8 +39,7 @@ namespace AW.API
             });
             services.Configure<List<UserToLogin>>(Configuration.GetSection("Users"));
         }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+ 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -48,17 +47,28 @@ namespace AW.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
-
-            app.UseRouting();
-
+            app.UseStaticFiles();
+            app.UseRouting(); 
             app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
+            /* 
+                app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
+            */ 
+            app.UseEndpoints((config) => {
+
+                // API or MVC Routes
+                config.MapControllerRoute(
+                    name: "default",
+                    pattern: "{Controller=Account}/{Action=Index}/{id?}"); 
+                //  config.MapRazorPages();
+            });
+
         }
     }
 }
+
+
