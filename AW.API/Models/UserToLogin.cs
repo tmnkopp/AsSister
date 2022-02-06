@@ -7,8 +7,7 @@ namespace AW.API.Models
 {
     public class UserToLogin
     {
-        public string UserName { get; set; }
-        public string Password { get; set; }
-
+        public string User { get; set; }
+        public string Attempt { get; set; }  
     }
 }

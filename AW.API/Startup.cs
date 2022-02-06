@@ -1,4 +1,5 @@
 using AW.API.Models;
+using AW.API.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -37,7 +38,11 @@ namespace AW.API
             {
                 options.LoginPath = "/Account/Login";
             });
-            services.Configure<List<UserToLogin>>(Configuration.GetSection("Users"));
+
+            services.AddSingleton<IConfiguration>(Configuration);
+            services.Configure<List<UserToLogin>>(Configuration.GetSection("Principles"));
+            services.AddTransient<IEncryptionService, EncryptionService>();
+            
         }
  
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -58,13 +63,10 @@ namespace AW.API
             });
 
             */ 
-            app.UseEndpoints((config) => {
-
-                // API or MVC Routes
+            app.UseEndpoints((config) => { 
                 config.MapControllerRoute(
                     name: "default",
-                    pattern: "{Controller=Account}/{Action=Index}/{id?}"); 
-                //  config.MapRazorPages();
+                    pattern: "{Controller=Account}/{Action=Index}/{id?}");  
             });
 
         }
